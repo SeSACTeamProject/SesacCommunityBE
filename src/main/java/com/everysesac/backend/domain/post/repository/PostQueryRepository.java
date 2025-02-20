@@ -25,7 +25,7 @@ public class PostQueryRepository {
 
     private final JPAQueryFactory queryFactory;
 
-    public Page<PostResponseDTO> list(String titleKeyword, String contentKeyword, Pageable pageable, PostType postType, String sortField, String sortDirection ) {
+    public Page<PostResponseDTO> listPagedPosts(String titleKeyword, String contentKeyword, Pageable pageable, PostType postType, String sortField, String sortDirection ) {
         if (sortField == null || sortField.isEmpty()) {
             sortField = "createdAt";
         }

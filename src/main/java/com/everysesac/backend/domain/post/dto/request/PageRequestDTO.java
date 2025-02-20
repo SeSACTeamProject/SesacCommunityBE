@@ -31,7 +31,7 @@ public class PageRequestDTO {
 
     private String sortField;
 
-    public Pageable getPageable(String... props) {
+    public Pageable getPageable() {
         return PageRequest.of(this.page - 1, this.size);
     }
 
