@@ -1,6 +1,8 @@
 package com.everysesac.backend.domain.post.dto.response;
 
-import com.everysesac.backend.domain.post.dto.request.CommentDTO;
+
+import com.everysesac.backend.domain.comment.dto.request.CommentRequestDTO;
+import com.everysesac.backend.domain.comment.dto.response.CommentResponseDTO;
 import com.everysesac.backend.domain.post.entity.PostStatus;
 import com.everysesac.backend.domain.post.entity.PostType;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -35,7 +37,7 @@ public class PostResponseDTO {
 
     private Integer likesCount;
 
-    private List<CommentDTO> comments = null;
+    private List<CommentResponseDTO> comments = null;
 
 
 

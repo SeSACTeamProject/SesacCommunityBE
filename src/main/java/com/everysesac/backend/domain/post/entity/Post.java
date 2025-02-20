@@ -73,6 +73,10 @@ public class Post extends BaseEntity {
         this.postStatus = postStatus;
     }
 
+    public void addComment() {
+        this.commentsCount += 1;
+    }
+
 
 
 
