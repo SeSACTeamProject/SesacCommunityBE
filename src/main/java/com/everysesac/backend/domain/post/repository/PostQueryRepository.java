@@ -10,6 +10,4 @@ import org.springframework.stereotype.Repository;
 public class PostQueryRepository {
     private final JPAQueryFactory queryFactory;
 
-
-
 }
