@@ -14,6 +14,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.NoSuchElementException;
+import java.util.Optional;
+
 @Service
 @Slf4j
 @RequiredArgsConstructor
@@ -24,7 +27,8 @@ public class PostService {
     private final ModelMapper modelMapper;
 
     public PageResponseDTO<PostResponseDTO> listPosts(PageRequestDTO pageRequestDTO) {
-        Page<PostResponseDTO> posts = postQueryRepository.listPagedPosts(pageRequestDTO.getTitleKeyword(), pageRequestDTO.getContentKeyword(), pageRequestDTO.getPageable(), pageRequestDTO.getPostType(), pageRequestDTO.getSortField(), pageRequestDTO.getSortDirection());
+        log.info("{}", pageRequestDTO);
+        Page<PostResponseDTO> posts = postQueryRepository.listPagedPosts(pageRequestDTO.getTitleKeyword(), pageRequestDTO.getContentKeyword(), pageRequestDTO.getPageable(), pageRequestDTO.getPostType(), pageRequestDTO.getSortField(), pageRequestDTO.getSortDirection(),pageRequestDTO.getPostStatus());
         return PageResponseDTO.<PostResponseDTO>withAll().
                 dtoList(posts.getContent()).
                 pageRequestDTO(pageRequestDTO).
@@ -32,14 +36,14 @@ public class PostService {
                 build();
     }
 
-    public PostResponseDTO register(PostRequestRegisterDTO postRequestRegisterDTO) {
+    public PostResponseDTO registerPost(PostRequestRegisterDTO postRequestRegisterDTO) {
         Post post = modelMapper.map(postRequestRegisterDTO, Post.class);
         Post savePost = postRepository.save(post);
         return modelMapper.map(savePost, PostResponseDTO.class);
     }
 
-    public PostResponseDTO modify(PostRequestRegisterDTO postRequestRegisterDTO) {
-        Post post = postRepository.findById(postRequestRegisterDTO.getPostId()).orElseThrow();
+    public PostResponseDTO modifyPost(PostRequestRegisterDTO postRequestRegisterDTO) {
+        Post post = postRepository.findById(postRequestRegisterDTO.getPostId()).orElseThrow(()->new NoSuchElementException("해당 게시물이 존재하지 않습니다."));
         post.changePostStatus(postRequestRegisterDTO.getPostStatus());
         post.changeContent(postRequestRegisterDTO.getContent());
         post.changeTitle(postRequestRegisterDTO.getTitle());
@@ -48,5 +52,14 @@ public class PostService {
         return modelMapper.map(post, PostResponseDTO.class);
     }
 
+    public void deletePost(Long id) {
+        Post post = postRepository.findById(id).orElseThrow(()->new NoSuchElementException("해당 게시물이 존재하지 않습니다."));
+        post.changeDeleteFlag(true);
+        postRepository.save(post);
+    }
 
+    public PostResponseDTO findPost(Long id) {
+        Post post = postRepository.findById(id).orElseThrow(()->new NoSuchElementException("해당 게시물이 존재하지 않습니다."));
+        return modelMapper.map(post, PostResponseDTO.class);
+    }
 }

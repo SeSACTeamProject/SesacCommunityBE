@@ -1,5 +1,6 @@
 package com.everysesac.backend.domain.post.dto.response;
 
+import com.everysesac.backend.domain.post.dto.request.CommentDTO;
 import com.everysesac.backend.domain.post.entity.PostStatus;
 import com.everysesac.backend.domain.post.entity.PostType;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -7,7 +8,7 @@ import com.querydsl.core.annotations.QueryProjection;
 import lombok.*;
 
 import java.time.LocalDateTime;
-
+import java.util.List;
 
 
 @NoArgsConstructor
@@ -33,6 +34,8 @@ public class PostResponseDTO {
     private Integer commentsCount;
 
     private Integer likesCount;
+
+    private List<CommentDTO> comments = null;
 
 
 
@@ -60,5 +63,6 @@ public class PostResponseDTO {
         this.likesCount = likesCount;
         this.postType = postType;
     }
+
 }
 

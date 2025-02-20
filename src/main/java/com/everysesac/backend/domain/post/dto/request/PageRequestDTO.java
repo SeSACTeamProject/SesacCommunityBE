@@ -1,5 +1,6 @@
 package com.everysesac.backend.domain.post.dto.request;
 
+import com.everysesac.backend.domain.post.entity.PostStatus;
 import com.everysesac.backend.domain.post.entity.PostType;
 import lombok.*;
 import org.springframework.data.domain.PageRequest;
@@ -27,15 +28,18 @@ public class PageRequestDTO {
 
     private PostType postType;
 
+    private PostStatus postStatus;
+
     private String sortDirection;
 
     private String sortField;
+
+    private String link;
 
     public Pageable getPageable() {
         return PageRequest.of(this.page - 1, this.size);
     }
 
-    private String link;
 
     public String getLink() {
         StringBuilder builder = new StringBuilder();

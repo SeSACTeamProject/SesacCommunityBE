@@ -1,6 +1,7 @@
 package com.everysesac.backend.domain.post.controller;
 
 import com.everysesac.backend.domain.post.dto.request.PageRequestDTO;
+import com.everysesac.backend.domain.post.dto.request.PostRequestRegisterDTO;
 import com.everysesac.backend.domain.post.dto.response.PageResponseDTO;
 import com.everysesac.backend.domain.post.dto.response.PostResponseDTO;
 import com.everysesac.backend.domain.post.service.PostService;
@@ -9,9 +10,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RequiredArgsConstructor
 @Slf4j
@@ -22,7 +21,7 @@ public class PostController {
     private final ModelMapper modelMapper;
 
     @GetMapping
-    public ResponseEntity<ApiResponse<PostResponseDTO>> studyList(PageRequestDTO pageRequestDTO) {
+    public ResponseEntity<ApiResponse<PostResponseDTO>> whatsList(PageRequestDTO pageRequestDTO) {
         PageResponseDTO<PostResponseDTO> posts = postService.listPosts(pageRequestDTO);
         ApiResponse<PostResponseDTO> response = ApiResponse.<PostResponseDTO>builder()
                 .status("success")
@@ -33,5 +32,44 @@ public class PostController {
                 .build();
         return ResponseEntity.ok(response);
     }
+
+    @PostMapping("/register")
+    public ResponseEntity<ApiResponse<PostResponseDTO>> createPost(PostRequestRegisterDTO postRequestRegisterDTO) {
+        PostResponseDTO dto = postService.registerPost(postRequestRegisterDTO);
+        ApiResponse<PostResponseDTO> response = ApiResponse.<PostResponseDTO>builder().
+                status("success")
+                .code(201)
+                .message("Resource was successful.")
+                .dto(dto)
+                .build();
+        return ResponseEntity.ok(response);
+    }
+    @PatchMapping("/{postId}")
+    public ResponseEntity<ApiResponse<PostResponseDTO>> updatePost(PostRequestRegisterDTO postRequestRegisterDTO,@PathVariable("postId") Long postId) {
+        postRequestRegisterDTO.setPostId(postId);
+        PostResponseDTO dto = postService.modifyPost(postRequestRegisterDTO);
+        ApiResponse<PostResponseDTO> response = ApiResponse.<PostResponseDTO>builder().
+                status("success")
+                .code(200)
+                .message("Request was successful.")
+                .dto(dto)
+                .build();
+        return ResponseEntity.ok(response);
+    }
+
+    @DeleteMapping("/{postId}")
+    public ResponseEntity<ApiResponse> deletePost(@PathVariable("postId")Long postId) {
+        postService.deletePost(postId);
+        return ResponseEntity.ok(ApiResponse.builder().status("success").code(200).message("Delete was successful").build());
+    }
+
+    @GetMapping("/{postId}")
+    public ResponseEntity<ApiResponse<PostResponseDTO>> findPost(@PathVariable("postId")Long postId) {
+        PostResponseDTO post = postService.findPost(postId);
+        return ResponseEntity.ok(ApiResponse.<PostResponseDTO>builder().status("success").code(200).message("Request was successful").dto(post).build());
+    }
+
+
+
 
 }

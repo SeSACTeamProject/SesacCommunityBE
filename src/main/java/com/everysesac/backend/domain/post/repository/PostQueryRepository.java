@@ -3,6 +3,7 @@ package com.everysesac.backend.domain.post.repository;
 
 import com.everysesac.backend.domain.post.dto.response.PostResponseDTO;
 import com.everysesac.backend.domain.post.dto.response.QPostResponseDTO;
+import com.everysesac.backend.domain.post.entity.PostStatus;
 import com.everysesac.backend.domain.post.entity.PostType;
 import com.querydsl.core.types.Order;
 import com.querydsl.core.types.OrderSpecifier;
@@ -10,6 +11,7 @@ import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.support.PageableExecutionUtils;
@@ -19,13 +21,14 @@ import java.util.List;
 
 import static com.everysesac.backend.domain.post.entity.QPost.post;
 
+@Slf4j
 @Repository
 @RequiredArgsConstructor
 public class PostQueryRepository {
 
     private final JPAQueryFactory queryFactory;
 
-    public Page<PostResponseDTO> listPagedPosts(String titleKeyword, String contentKeyword, Pageable pageable, PostType postType, String sortField, String sortDirection) {
+    public Page<PostResponseDTO> listPagedPosts(String titleKeyword, String contentKeyword, Pageable pageable, PostType postType, String sortField, String sortDirection,PostStatus postStatus) {
         if (sortField == null || sortField.isEmpty()) {
             sortField = "createdAt";
         }
@@ -38,7 +41,7 @@ public class PostQueryRepository {
         List<PostResponseDTO> content = queryFactory
                 .select(new QPostResponseDTO(post.id, post.title, post.createdAt, post.postStatus, post.viewsCount, post.commentsCount, post.likesCount,post.postType))
                 .from(post)
-                .where(contentContains(contentKeyword), titleContains(titleKeyword), postTypeEquals(postType))
+                .where(contentContains(contentKeyword), titleContains(titleKeyword), postTypeEquals(postType),postStatusEquals(postStatus))
                 .orderBy(orderSpecifier, post.createdAt.desc())
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
@@ -73,6 +76,10 @@ public class PostQueryRepository {
 
     private BooleanExpression postTypeEquals(PostType postType) {
         return postType != null ? post.postType.eq(postType) : null;
+    }
+
+    private BooleanExpression postStatusEquals(PostStatus postStatus) {
+        return postStatus != null ? post.postStatus.eq(postStatus) : null;
     }
 
 }
