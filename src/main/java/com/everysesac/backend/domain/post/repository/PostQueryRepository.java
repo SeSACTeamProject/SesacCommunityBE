@@ -25,7 +25,7 @@ public class PostQueryRepository {
 
     private final JPAQueryFactory queryFactory;
 
-    public Page<PostResponseDTO> listPagedPosts(String titleKeyword, String contentKeyword, Pageable pageable, PostType postType, String sortField, String sortDirection ) {
+    public Page<PostResponseDTO> listPagedPosts(String titleKeyword, String contentKeyword, Pageable pageable, PostType postType, String sortField, String sortDirection) {
         if (sortField == null || sortField.isEmpty()) {
             sortField = "createdAt";
         }
@@ -36,7 +36,7 @@ public class PostQueryRepository {
         OrderSpecifier<?> orderSpecifier = getOrderSpecifier(sortField, sortDirection);
 
         List<PostResponseDTO> content = queryFactory
-                .select(new QPostResponseDTO(post.id, post.title, post.createdAt, post.postStatus, post.viewsCount, post.commentsCount, post.likesCount))
+                .select(new QPostResponseDTO(post.id, post.title, post.createdAt, post.postStatus, post.viewsCount, post.commentsCount, post.likesCount,post.postType))
                 .from(post)
                 .where(contentContains(contentKeyword), titleContains(titleKeyword), postTypeEquals(postType))
                 .orderBy(orderSpecifier, post.createdAt.desc())
