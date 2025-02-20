@@ -36,7 +36,7 @@ public class PostQueryRepository {
         OrderSpecifier<?> orderSpecifier = getOrderSpecifier(sortField, sortDirection);
 
         List<PostResponseDTO> content = queryFactory
-                .select(new QPostResponseDTO(post.id, post.title, post.createdAt, post.postStatus, post.viewsCount, post.commentsCount, post.likesCount))
+                .select(new QPostResponseDTO(post.id, post.title, post.createdAt, post.postStatus, post.viewsCount, post.commentsCount, post.likesCount,post.postType))
                 .from(post)
                 .where(contentContains(contentKeyword), titleContains(titleKeyword), postTypeEquals(postType))
                 .orderBy(orderSpecifier, post.createdAt.desc())
