@@ -10,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 @RequiredArgsConstructor
@@ -21,7 +22,7 @@ public class PostController {
     private final ModelMapper modelMapper;
 
     @GetMapping
-    public ResponseEntity<ApiResponse<PostResponseDTO>> whatsList(PageRequestDTO pageRequestDTO) {
+    public ResponseEntity<ApiResponse<PostResponseDTO>> whatsList(@Validated PageRequestDTO pageRequestDTO) {
         PageResponseDTO<PostResponseDTO> posts = postService.listPosts(pageRequestDTO);
         ApiResponse<PostResponseDTO> response = ApiResponse.<PostResponseDTO>builder()
                 .status("success")
@@ -34,7 +35,7 @@ public class PostController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<ApiResponse<PostResponseDTO>> createPost(PostRequestRegisterDTO postRequestRegisterDTO) {
+    public ResponseEntity<ApiResponse<PostResponseDTO>> createPost(@Validated PostRequestRegisterDTO postRequestRegisterDTO) {
         PostResponseDTO dto = postService.registerPost(postRequestRegisterDTO);
         ApiResponse<PostResponseDTO> response = ApiResponse.<PostResponseDTO>builder().
                 status("success")
@@ -45,7 +46,7 @@ public class PostController {
         return ResponseEntity.ok(response);
     }
     @PatchMapping("/{postId}")
-    public ResponseEntity<ApiResponse<PostResponseDTO>> updatePost(PostRequestRegisterDTO postRequestRegisterDTO,@PathVariable("postId") Long postId) {
+    public ResponseEntity<ApiResponse<PostResponseDTO>> updatePost(@Validated PostRequestRegisterDTO postRequestRegisterDTO,@PathVariable("postId") Long postId) {
         postRequestRegisterDTO.setPostId(postId);
         PostResponseDTO dto = postService.modifyPost(postRequestRegisterDTO);
         ApiResponse<PostResponseDTO> response = ApiResponse.<PostResponseDTO>builder().

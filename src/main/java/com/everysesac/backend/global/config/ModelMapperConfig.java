@@ -14,8 +14,9 @@ public class ModelMapperConfig {
 
         modelMapper
                 .getConfiguration()
-                .setFieldMatchingEnabled(true) // Enable matching on fields
-                .setMatchingStrategy(MatchingStrategies.LOOSE); // Use strict matching strategy
+                .setFieldMatchingEnabled(true) // 필드 매칭 활성화
+                .setFieldAccessLevel(org.modelmapper.config.Configuration.AccessLevel.PRIVATE) // PRIVATE 필드 접근 허용
+                .setMatchingStrategy(MatchingStrategies.LOOSE);
 
         return modelMapper;
     }
