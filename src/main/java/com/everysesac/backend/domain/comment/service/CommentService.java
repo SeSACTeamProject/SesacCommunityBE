@@ -42,9 +42,11 @@ public class CommentService {
         return modelMapper.map(saveComment, CommentResponseDTO.class);
     }
 
-
-
-
+    public void deleteComment(Long postId , Long commentId) {
+        Post post = postRepository.findById(postId).orElseThrow(() -> new NoSuchElementException("게시물이 존재하지 않습니다."));
+        post.deleteComment();
+        commentRepository.deleteById(commentId);
+    }
 
 
 }
