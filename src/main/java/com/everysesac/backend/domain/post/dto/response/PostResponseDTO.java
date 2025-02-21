@@ -15,7 +15,6 @@ import java.util.List;
 
 @NoArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
-@AllArgsConstructor
 @Data
 public class PostResponseDTO {
 
@@ -37,7 +36,7 @@ public class PostResponseDTO {
 
     private Integer likesCount;
 
-    private List<CommentResponseDTO> comments = null;
+    private List<CommentResponseDTO> comments;
 
 
 
@@ -64,6 +63,19 @@ public class PostResponseDTO {
         this.commentsCount = commentsCount;
         this.likesCount = likesCount;
         this.postType = postType;
+    }
+    @QueryProjection
+    public PostResponseDTO(Long postId, String title, String content, LocalDateTime createdAt, PostStatus postStatus, PostType postType, Integer viewsCount, Integer commentsCount, Integer likesCount, List<CommentResponseDTO> comments) {
+        this.postId = postId;
+        this.title = title;
+        this.content = content;
+        this.createdAt = createdAt;
+        this.postStatus = postStatus;
+        this.postType = postType;
+        this.viewsCount = viewsCount;
+        this.commentsCount = commentsCount;
+        this.likesCount = likesCount;
+        this.comments = comments;
     }
 
 }

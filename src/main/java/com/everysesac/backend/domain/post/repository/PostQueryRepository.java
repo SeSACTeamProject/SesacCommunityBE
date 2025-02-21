@@ -1,24 +1,32 @@
 package com.everysesac.backend.domain.post.repository;
 
 
+
+import com.everysesac.backend.domain.comment.dto.response.CommentResponseDTO;
+import com.everysesac.backend.domain.comment.dto.response.QCommentResponseDTO;
 import com.everysesac.backend.domain.post.dto.response.PostResponseDTO;
 import com.everysesac.backend.domain.post.dto.response.QPostResponseDTO;
 import com.everysesac.backend.domain.post.entity.PostStatus;
 import com.everysesac.backend.domain.post.entity.PostType;
 import com.querydsl.core.types.Order;
 import com.querydsl.core.types.OrderSpecifier;
+
 import com.querydsl.core.types.dsl.BooleanExpression;
+import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.hibernate.annotations.BatchSize;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.support.PageableExecutionUtils;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.StringUtils;
 import java.util.List;
+import java.util.Map;
 
+import static com.everysesac.backend.domain.comment.entity.QComment.comment;
 import static com.everysesac.backend.domain.post.entity.QPost.post;
 
 @Slf4j
@@ -28,7 +36,9 @@ public class PostQueryRepository {
 
     private final JPAQueryFactory queryFactory;
 
-    public Page<PostResponseDTO> listPagedPosts(String titleKeyword, String contentKeyword, Pageable pageable, PostType postType, String sortField, String sortDirection,PostStatus postStatus) {
+    @BatchSize(size = 100)
+    public Page<PostResponseDTO> listPagedPosts(String titleKeyword, String contentKeyword, Pageable pageable, PostType postType, String sortField, String sortDirection, PostStatus postStatus) {
+
         if (sortField == null || sortField.isEmpty()) {
             sortField = "createdAt";
         }
@@ -39,13 +49,27 @@ public class PostQueryRepository {
         OrderSpecifier<?> orderSpecifier = getOrderSpecifier(sortField, sortDirection);
 
         List<PostResponseDTO> content = queryFactory
-                .select(new QPostResponseDTO(post.id, post.title, post.createdAt, post.postStatus, post.viewsCount, post.commentsCount, post.likesCount,post.postType))
+                .select(new QPostResponseDTO(
+                        post.id,
+                        post.title,
+                        post.createdAt,
+                        post.postStatus,
+                        post.viewsCount,
+                        post.commentsCount,
+                        post.likesCount,
+                        post.postType
+                ))
                 .from(post)
-                .where(contentContains(contentKeyword), titleContains(titleKeyword), postTypeEquals(postType),postStatusEquals(postStatus))
+                .where(
+                        contentContains(contentKeyword),
+                        titleContains(titleKeyword),
+                        postTypeEquals(postType),
+                        postStatusEquals(postStatus))
                 .orderBy(orderSpecifier, post.createdAt.desc())
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetch();
+
         JPAQuery<Long> countQuery = queryFactory
                 .select(post.count())
                 .from(post)

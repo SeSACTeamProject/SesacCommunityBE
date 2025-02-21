@@ -1,5 +1,7 @@
 package com.everysesac.backend.domain.post.service;
 
+import com.everysesac.backend.domain.comment.dto.response.CommentResponseDTO;
+import com.everysesac.backend.domain.comment.repository.CommentQueryRepository;
 import com.everysesac.backend.domain.post.dto.request.PageRequestDTO;
 import com.everysesac.backend.domain.post.dto.request.PostRequestRegisterDTO;
 import com.everysesac.backend.domain.post.dto.response.PageResponseDTO;
@@ -14,6 +16,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.NoSuchElementException;
 
 @Service
@@ -23,6 +26,7 @@ import java.util.NoSuchElementException;
 public class PostService {
     private final PostRepository postRepository;
     private final PostQueryRepository postQueryRepository;
+    private final CommentQueryRepository commentQueryRepository;
     private final ModelMapper modelMapper;
 
     public PageResponseDTO<PostResponseDTO> listPosts(PageRequestDTO pageRequestDTO) {
@@ -58,7 +62,10 @@ public class PostService {
     }
 
     public PostResponseDTO findPost(Long id) {
-        Post post = postRepository.findById(id).orElseThrow(()->new NoSuchElementException("해당 게시물이 존재하지 않습니다."));
-        return modelMapper.map(post, PostResponseDTO.class);
+        Post post = postRepository.findById(id).orElseThrow(() -> new NoSuchElementException("해당 게시물이 존재하지 않습니다."));
+        PostResponseDTO dto = modelMapper.map(post, PostResponseDTO.class);
+        List<CommentResponseDTO> comments = commentQueryRepository.findComments(id);
+        dto.setComments(comments);
+        return dto;
     }
 }
