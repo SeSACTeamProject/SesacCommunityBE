@@ -5,7 +5,10 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.Getter;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -17,10 +20,13 @@ public class PostController {
         @Parameter(name="title", description = "post title")
         @Parameter(name="content", description = "post content")
         @Parameter(name="postType", description = "study or team")
-    @ApiResponse(responseCode = "201", description = "insert successful")   // TODO : content 어노테이션 추가 예정
+//    @ApiResponse(responseCode = "201", description = "insert successful")
     @PostMapping("/register")
-    public PostDTO register(@RequestParam Long postId) {
-
-        return null;
+    public ResponseEntity<String> register(@Valid PostDTO postDTO) {
+        try {
+            return ResponseEntity.status(HttpStatus.CREATED).body("게시글이 성공적으로 작성되었습니다.");
+        } catch (Exception e){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Insert failed : " + e.getMessage());
+        }
     }
 }

@@ -19,8 +19,8 @@ public class PostServiceImpl implements PostService{
     private final PostRepository postRepository;
     @Override
     public Long register(PostDTO postDTO) {
-        log.info("postDTO : "+postDTO);
         Post post = modelMapper.map(postDTO, Post.class);
+        // TODO : 세션에서 user 데이터 받아서 post에 저장하는 부분 필요
         Long id = postRepository.save(post).getId();
         return id;
     }
