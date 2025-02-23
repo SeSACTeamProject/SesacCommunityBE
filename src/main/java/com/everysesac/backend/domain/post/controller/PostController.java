@@ -1,14 +1,12 @@
 package com.everysesac.backend.domain.post.controller;
 
+import com.everysesac.backend.domain.post.dto.PostDTO;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.Getter;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/posts")
@@ -19,9 +17,10 @@ public class PostController {
         @Parameter(name="title", description = "post title")
         @Parameter(name="content", description = "post content")
         @Parameter(name="postType", description = "study or team")
-    @ApiResponse(responseCode = "201", description = "insert successful")
-    @GetMapping("/register")
-    public String postTest() {
-        return "test success";
+    @ApiResponse(responseCode = "201", description = "insert successful")   // TODO : content 어노테이션 추가 예정
+    @PostMapping("/register")
+    public PostDTO register(@RequestParam Long postId) {
+
+        return null;
     }
 }
