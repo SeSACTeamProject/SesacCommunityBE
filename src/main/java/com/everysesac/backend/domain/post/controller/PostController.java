@@ -5,6 +5,8 @@ import com.everysesac.backend.domain.post.dto.response.PageResponseDTO;
 import com.everysesac.backend.domain.post.dto.response.PostResponseDTO;
 import com.everysesac.backend.domain.post.service.PostService;
 import com.everysesac.backend.global.dto.ApiResponse;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
@@ -13,14 +15,17 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+@Tag(name = "Post API", description = "APIs related to posts")
 @RequiredArgsConstructor
 @Slf4j
 @RestController
 @RequestMapping("/api/posts")
 public class PostController {
+
     private final PostService postService;
     private final ModelMapper modelMapper;
 
+    @Operation(summary = "Get Post List", description = "Retrieve a paginated list of posts.")
     @GetMapping
     public ResponseEntity<ApiResponse<PostResponseDTO>> studyList(PageRequestDTO pageRequestDTO) {
         PageResponseDTO<PostResponseDTO> posts = postService.listPosts(pageRequestDTO);
@@ -33,5 +38,4 @@ public class PostController {
                 .build();
         return ResponseEntity.ok(response);
     }
-
 }

@@ -1,7 +1,7 @@
 package com.everysesac.backend.domain.user.entity;
 
 
-import com.everysesac.backend.domain.like.auth.entity.SnsDiv;
+import com.everysesac.backend.domain.auth.jwt.entity.SnsDiv;
 import com.everysesac.backend.global.util.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
@@ -24,7 +24,7 @@ public class User extends BaseEntity {
     private String email;
 
     @Column(nullable = false)
-    private String name;
+    private String username;
 
     @Column(nullable = false)
     private String password;
@@ -39,7 +39,7 @@ public class User extends BaseEntity {
     @Column(nullable = false)
     private String phonenumber;
 
-    @Column(nullable = false)
+//    @Column(nullable = false)
     private String lastNumber;
 
 //    @Builder.Default

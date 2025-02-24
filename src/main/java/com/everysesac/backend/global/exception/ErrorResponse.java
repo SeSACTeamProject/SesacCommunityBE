@@ -14,10 +14,10 @@ import java.util.List;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class ErrorResponse {
 
-    private String status; // "error"
-    private String code;   // e.g., "E4001"
-    private String message; // e.g., "Invalid request parameters."
-    private List<FieldError> errors; // 필드별 에러 목록
+    private String status;
+    private String code;
+    private String message;
+    private List<FieldError> errors;
 
     public static ErrorResponse of(ErrorCode errorCode, List<FieldError> errors) {
         return new ErrorResponse("error", errorCode.getCode(), errorCode.getMessage(), errors);
