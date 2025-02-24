@@ -20,7 +20,7 @@ public class ApiResponse<T> {
     private String message;
     private Integer size;
     private List<T> dtoList;
-    private T dto;
+    private T data;
 
     public ApiResponse(String status, int code, String message) {
         this.status = status;
