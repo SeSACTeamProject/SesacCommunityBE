@@ -18,9 +18,9 @@ public class PostServiceImpl implements PostService{
     private final ModelMapper modelMapper;
     private final PostRepository postRepository;
     @Override
-    public Post register(PostDTO postDTO) {
+    public PostDTO register(PostDTO postDTO) {
         Post post = modelMapper.map(postDTO, Post.class);
         // TODO : 세션에서 user 데이터 받아서 post에 저장하는 부분 필요
-        return postRepository.save(post);
+        return modelMapper.map(postRepository.save(post), PostDTO.class);
     }
 }
