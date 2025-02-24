@@ -1,7 +1,7 @@
 package com.everysesac.backend.domain.user.entity;
 
 
-import com.everysesac.backend.domain.like.auth.entity.SnsDiv;
+import com.everysesac.backend.domain.auth.entity.SnsDiv;
 import com.everysesac.backend.global.util.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
@@ -16,7 +16,7 @@ import lombok.*;
 public class User extends BaseEntity {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "user_id")
     private Long id;
 
@@ -39,7 +39,7 @@ public class User extends BaseEntity {
     @Column(nullable = false)
     private String phonenumber;
 
-    @Column(nullable = false)
+    @Column(name = "last_number", nullable = false)
     private String lastNumber;
 
 //    @Builder.Default

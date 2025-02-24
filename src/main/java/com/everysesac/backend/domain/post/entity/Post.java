@@ -18,7 +18,7 @@ import static com.everysesac.backend.domain.post.entity.PostStatus.IN_PROGRESS;
 public class Post extends BaseEntity {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "post_id")
     private Long id;
 
