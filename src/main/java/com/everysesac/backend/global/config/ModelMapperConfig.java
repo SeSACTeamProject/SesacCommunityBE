@@ -15,6 +15,8 @@ public class ModelMapperConfig {
         modelMapper
                 .getConfiguration()
                 .setFieldMatchingEnabled(true) // Enable matching on fields
+                //entity에 setter가 없으므로 private 필드에 직접 접근하여 리플렉션 사용
+                .setFieldAccessLevel(org.modelmapper.config.Configuration.AccessLevel.PRIVATE)
                 .setMatchingStrategy(MatchingStrategies.LOOSE); // Use strict matching strategy
 
         return modelMapper;
