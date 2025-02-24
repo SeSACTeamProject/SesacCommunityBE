@@ -64,7 +64,6 @@ public class Post extends BaseEntity {
         this.content = content;
     }
 
-
     public void changePostType(PostType postType) {
         this.postType = postType;
     }

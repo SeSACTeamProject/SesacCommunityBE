@@ -9,6 +9,8 @@ import com.everysesac.backend.domain.post.entity.Post;
 import com.everysesac.backend.domain.post.service.PostService;
 import com.everysesac.backend.global.dto.ApiResponse;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -18,6 +20,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+@Tag(name = "Post API", description = "APIs related to posts")
 @RequiredArgsConstructor
 @Slf4j
 @RestController
@@ -25,6 +28,7 @@ import org.springframework.web.bind.annotation.*;
 public class PostController {
     private final PostService postService;
 
+    @Operation(summary = "Get Post List", description = "Retrieve a paginated list of posts.")
     @GetMapping
     public ResponseEntity<ApiResponse<PostResponseDTO>> studyList(PageRequestDTO pageRequestDTO) {
         PageResponseDTO<PostResponseDTO> posts = postService.listPosts(pageRequestDTO);
