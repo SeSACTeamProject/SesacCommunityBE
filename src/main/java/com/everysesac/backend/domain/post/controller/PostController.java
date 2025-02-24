@@ -1,5 +1,4 @@
 package com.everysesac.backend.domain.post.controller;
-
 import com.everysesac.backend.domain.post.dto.request.PageRequestDTO;
 import com.everysesac.backend.domain.post.dto.response.PageResponseDTO;
 import com.everysesac.backend.domain.post.dto.response.PostResponseDTO;
@@ -12,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import com.everysesac.backend.domain.post.dto.PostDTO;
 
 @RequiredArgsConstructor
 @Slf4j
@@ -32,6 +32,23 @@ public class PostController {
                 .dtoList(posts.getDtoList())
                 .build();
         return ResponseEntity.ok(response);
+    }
+      @Tag(name="test api", description = "it's a test controller method")
+    @Operation(summary = "post insert", description = "new post insertion")
+        @Parameter(name="title", description = "post title")
+        @Parameter(name="content", description = "post content")
+        @Parameter(name="postType", description = "study or team")
+//    @ApiResponse(responseCode = "201", description = "insert successful")
+    @PostMapping("/register")
+    public ResponseEntity<ApiResponse<PostDTO>> register(@Valid PostDTO postDTO) {
+        PostDTO postResponse = postService.register(postDTO);
+        ApiResponse<PostDTO> apiResponse = new ApiResponse<>(
+                HttpStatus.CREATED.value()+"",
+                201,
+                "post created"
+        );
+        apiResponse.setDto(postResponse);
+        return ResponseEntity.status(HttpStatus.CREATED).body(apiResponse);
     }
 
 }
