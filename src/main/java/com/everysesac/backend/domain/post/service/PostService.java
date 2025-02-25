@@ -14,5 +14,6 @@ public interface PostService {
 
     public PostResponseDTO modify(PostUpdateRequestDTO postUpdateRequestDTO, Long postId);
 
+    public void softDelete(Long postId);
 
 }
