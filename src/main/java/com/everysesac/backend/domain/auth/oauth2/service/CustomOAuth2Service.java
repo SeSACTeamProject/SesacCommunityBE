@@ -1,9 +1,6 @@
 package com.everysesac.backend.domain.auth.oauth2.service;
 
-import com.everysesac.backend.domain.auth.oauth2.dto.CustomOAuth2User;
-import com.everysesac.backend.domain.auth.oauth2.dto.NaverResponse;
-import com.everysesac.backend.domain.auth.oauth2.dto.OAuth2Response;
-import com.everysesac.backend.domain.auth.oauth2.dto.UserDTO;
+import com.everysesac.backend.domain.auth.oauth2.dto.*;
 import com.everysesac.backend.domain.user.entity.Role;
 import com.everysesac.backend.domain.user.entity.User;
 import com.everysesac.backend.domain.user.repository.UserRepository;
@@ -22,59 +19,59 @@ public class CustomOAuth2Service extends DefaultOAuth2UserService {
 
     private final UserRepository userRepository;
 
-
     @Override
     public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
         OAuth2User oAuth2User = super.loadUser(userRequest);
-        log.info("{}", oAuth2User);
+        log.info("OAuth2 User Attributes: {}", oAuth2User.getAttributes());
 
         String registrationId = userRequest.getClientRegistration().getRegistrationId();
-        OAuth2Response oAuth2Response = null;
+        OAuth2Response oAuth2Response;
+
+        // Provider-specific response handling
         if (registrationId.equals("naver")) {
             oAuth2Response = new NaverResponse(oAuth2User.getAttributes());
         } else if (registrationId.equals("kakao")) {
-            oAuth2Response = new NaverResponse(oAuth2User.getAttributes());
+            oAuth2Response = new KakaoResponse(oAuth2User.getAttributes()); // KakaoResponse 구현 필요
         } else {
-            return null;
+            throw new OAuth2AuthenticationException("Unsupported provider: " + registrationId);
         }
 
         String username = oAuth2Response.getProvider() + " " + oAuth2Response.getProviderId();
+        User user = userRepository.findByUsername(username);
 
-        User existData = userRepository.findByUsername(username);
-
-        if (existData == null) {
-            User user = User.builder()
-                    .username(username)
-                    .role(Role.ROLE_USER)
-                    .email(oAuth2Response.getEmail())
-                    .phonenumber(oAuth2Response.getPhonenumber())
-                    .name(oAuth2Response.getName())
-                    .build();
-            userRepository.save(user);
-
-            UserDTO userDTO = UserDTO.builder()
-                    .username(username)
-                    .name(oAuth2Response.getName())
-                    .phonenumber(oAuth2Response.getPhonenumber())
-                    .email(oAuth2Response.getEmail())
-                    .role("ROLE_USER")
-                    .build();
-            return new CustomOAuth2User(userDTO);
+        if (user == null) {
+            // Create new user
+            user = createNewUser(oAuth2Response, username);
         } else {
-            existData.changeName(oAuth2Response.getName());
-            existData.changeEmail(oAuth2Response.getEmail());
-            existData.chagnePhonenumber(oAuth2Response.getPhonenumber());
-            userRepository.save(existData);
-            UserDTO userDTO = UserDTO.builder()
-                    .username(username)
-                    .name(existData.getName())
-                    .phonenumber(existData.getPhonenumber())
-                    .email(existData.getEmail())
-                    .role(existData.getRole().toString())
-                    .build();
-            return new CustomOAuth2User(userDTO);
+            // Update existing user
+            updateExistingUser(user, oAuth2Response);
         }
 
+        UserDTO userDTO = UserDTO.builder()
+                .username(user.getUsername())
+                .name(user.getName())
+                .email(user.getEmail())
+                .role(user.getRole().toString())
+                .build();
 
+        return new CustomOAuth2User(userDTO);
+    }
+
+    private User createNewUser(OAuth2Response response, String username) {
+        User user = User.builder()
+                .username(username)
+                .role(Role.ROLE_USER)
+                .email(response.getEmail())
+                .phonenumber(response.getPhonenumber())
+                .name(response.getName())
+                .build();
+        return userRepository.save(user);
+    }
+
+    private void updateExistingUser(User user, OAuth2Response response) {
+        user.changeName(response.getName());
+        user.changeEmail(response.getEmail());
+        user.chagnePhonenumber(response.getPhonenumber());
+        userRepository.save(user);
     }
 }
