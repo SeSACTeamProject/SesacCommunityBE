@@ -45,7 +45,6 @@ public class PostController {
         @Parameter(name="content", description = "post content")
         @Parameter(name="postType", description = "study or team")
     //@ApiResponse(responseCode = "201", description = "insert successful")
-
     @PostMapping("/register")
     public ResponseEntity<ApiResponse<PostDTO>> register(@Valid PostDTO postDTO) {
         PostDTO postResponse = postService.register(postDTO);
