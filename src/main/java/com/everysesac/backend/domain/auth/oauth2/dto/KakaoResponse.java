@@ -34,4 +34,5 @@ public class KakaoResponse implements OAuth2Response{
     public String getPhonenumber() {
         return attribute.get("mobile").toString();
     }
+
 }

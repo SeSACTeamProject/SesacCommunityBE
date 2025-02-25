@@ -29,7 +29,6 @@ public class User extends BaseEntity {
     @Column(nullable = false)
     private String name;
 
-    @Column(nullable = false)
     private String password;
 
     @Enumerated(EnumType.STRING)
@@ -44,6 +43,22 @@ public class User extends BaseEntity {
 
     @Column(nullable = false)
     private String lastNumber;
+
+    public void changeName(String name) {
+        this.name = name;
+    }
+
+    public void chagnePhonenumber(String phonenumber) {
+        this.phonenumber = phonenumber;
+    }
+    public void changeEmail(String email) {
+        this.email = email;
+
+    }public void changeRole(String role) {
+        this.role = Role.valueOf(role);
+    }
+
+
 
 //    @Builder.Default
 //    @OneToMany(mappedBy = "user")

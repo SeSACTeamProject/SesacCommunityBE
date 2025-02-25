@@ -40,4 +40,7 @@ public class CustomOAuth2User implements OAuth2User {
         return userDTO.getUsername();
     }
 
+    public String getPhonenumber() {
+        return userDTO.getPhonenumber();
+    }
 }
