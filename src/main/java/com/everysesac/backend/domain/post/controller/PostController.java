@@ -1,5 +1,6 @@
 package com.everysesac.backend.domain.post.controller;
 import com.everysesac.backend.domain.post.dto.request.PageRequestDTO;
+import com.everysesac.backend.domain.post.dto.request.PostCreateRequestDTO;
 import com.everysesac.backend.domain.post.dto.request.PostUpdateRequestDTO;
 import com.everysesac.backend.domain.post.dto.response.PageResponseDTO;
 import com.everysesac.backend.domain.post.dto.response.PostResponseDTO;
@@ -13,9 +14,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import com.everysesac.backend.domain.post.dto.request.PostCreateRequestDTO;
 
 @RequiredArgsConstructor
 @Slf4j

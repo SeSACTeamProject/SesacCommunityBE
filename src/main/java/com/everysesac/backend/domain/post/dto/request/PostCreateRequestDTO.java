@@ -1,6 +1,5 @@
 package com.everysesac.backend.domain.post.dto.request;
 
-import com.everysesac.backend.domain.post.entity.PostStatus;
 import com.everysesac.backend.domain.post.entity.PostType;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
