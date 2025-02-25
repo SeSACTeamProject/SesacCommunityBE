@@ -75,4 +75,12 @@ public class PostQueryRepository {
         return postType != null ? post.postType.eq(postType) : null;
     }
 
+    // soft delete 메서드
+    public long softDelete(Long postId) {
+        return queryFactory.update(post)
+                .set(post.deleteFlag, true) // delete flag 변경
+                .where(post.id.eq(postId))
+                .execute();
+    }
+
 }

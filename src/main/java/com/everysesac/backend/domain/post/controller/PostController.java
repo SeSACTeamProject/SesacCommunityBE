@@ -60,7 +60,7 @@ public class PostController {
     @Parameter(name="content", description = "post content")
     @Parameter(name="postStatus", description = "IN_PROGRESS, COMPLETED")
     @PatchMapping("/{postId}")
-    public ResponseEntity<ApiResponse<PostResponseDTO>> updatePost(
+    public ResponseEntity<ApiResponse<PostResponseDTO>> modify(
             @PathVariable Long postId,
             @RequestBody @Valid PostUpdateRequestDTO postUpdateRequestDTO) {
         PostResponseDTO postResponse = postService.modify(postUpdateRequestDTO, postId);
@@ -70,6 +70,18 @@ public class PostController {
                 "Request was successful."
         );
         apiResponse.setData(postResponse);
+        return ResponseEntity.ok(apiResponse);
+    }
+    @Tag(name="POST API", description = "POST API")
+    @Operation(summary = "post delete")
+    @DeleteMapping("/{postId}/delete")
+    public ResponseEntity<ApiResponse<Void>> remove(@PathVariable Long postId) {
+        postService.softDelete(postId);
+        ApiResponse<Void> apiResponse = new ApiResponse<>(
+                HttpStatus.OK.value()+"",
+                HttpStatus.OK.value(),
+                "Delete was successful."
+        );
         return ResponseEntity.ok(apiResponse);
     }
 

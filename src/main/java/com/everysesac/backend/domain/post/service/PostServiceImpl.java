@@ -17,6 +17,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Optional;
+
 @Service
 @Log4j2
 @RequiredArgsConstructor
@@ -36,13 +38,21 @@ public class PostServiceImpl implements PostService{
     @Override
     public PostResponseDTO modify(PostUpdateRequestDTO postCreateRequestDTO, Long postId) {
         Post post = postRepository.findById(postId)
-                .orElseThrow(()-> new EntityNotFoundException("===== POST SERVICE : in method modify, post not fount : "+postId));
+                .orElseThrow(()-> new EntityNotFoundException("post not found : "+postId));
 
         post.changeTitle(postCreateRequestDTO.getTitle());
         post.changeContent(postCreateRequestDTO.getContent());
         post.changePostStatus(postCreateRequestDTO.getPostStatus());
 
         return modelMapper.map(post, PostResponseDTO.class);
+    }
+
+    @Override
+    public void softDelete(Long postId) {
+        long updatedRows = postQueryRepository.softDelete(postId);
+        if (updatedRows == 0) { // 변경된 데이터 수가 0일 때 예외처리
+            throw new EntityNotFoundException("post not found : "+postId);
+        }
     }
 
     public PageResponseDTO<PostResponseDTO> listPosts(PageRequestDTO pageRequestDTO) {
