@@ -41,7 +41,7 @@ public class PostController {
     @Operation(summary = "post insert")
         @Parameter(name="title", description = "post title")
         @Parameter(name="content", description = "post content")
-        @Parameter(name="postType", description = "study or team")
+        @Parameter(name="postType", description = "STUDY, TEAM")
     @PostMapping("/register")
     public ResponseEntity<ApiResponse<PostResponseDTO>> register(
             @RequestBody @Valid PostCreateRequestDTO postCreateRequestDTO) {
@@ -59,7 +59,7 @@ public class PostController {
     @Operation(summary = "post update")
     @Parameter(name="title", description = "post title")
     @Parameter(name="content", description = "post content")
-    @Parameter(name="postType", description = "study or team")
+    @Parameter(name="postStatus", description = "IN_PROGRESS, COMPLETED")
     @PatchMapping("/{postId}")
     public ResponseEntity<ApiResponse<PostResponseDTO>> updatePost(
             @PathVariable Long postId,
