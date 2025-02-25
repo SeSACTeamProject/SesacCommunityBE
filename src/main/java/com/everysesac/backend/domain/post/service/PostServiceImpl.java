@@ -4,20 +4,18 @@ import com.everysesac.backend.domain.post.dto.request.PostCreateRequestDTO;
 import com.everysesac.backend.domain.post.dto.request.PageRequestDTO;
 import com.everysesac.backend.domain.post.dto.request.PostUpdateRequestDTO;
 import com.everysesac.backend.domain.post.dto.response.PageResponseDTO;
+import com.everysesac.backend.domain.post.dto.response.PostReadResponseDTO;
 import com.everysesac.backend.domain.post.dto.response.PostResponseDTO;
 import com.everysesac.backend.domain.post.entity.Post;
 import com.everysesac.backend.domain.post.repository.PostQueryRepository;
 import com.everysesac.backend.domain.post.repository.PostRepository;
 import jakarta.persistence.EntityNotFoundException;
-import jakarta.persistence.PostUpdate;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.Optional;
 
 @Service
 @Log4j2
@@ -38,12 +36,10 @@ public class PostServiceImpl implements PostService{
     @Override
     public PostResponseDTO modify(PostUpdateRequestDTO postCreateRequestDTO, Long postId) {
         Post post = postRepository.findById(postId)
-                .orElseThrow(()-> new EntityNotFoundException("post not found : "+postId));
-
+                .orElseThrow();
         post.changeTitle(postCreateRequestDTO.getTitle());
         post.changeContent(postCreateRequestDTO.getContent());
         post.changePostStatus(postCreateRequestDTO.getPostStatus());
-
         return modelMapper.map(post, PostResponseDTO.class);
     }
 
@@ -54,6 +50,13 @@ public class PostServiceImpl implements PostService{
             throw new EntityNotFoundException("post not found : "+postId);
         }
     }
+
+    @Override
+    public PostReadResponseDTO readOne(Long postId) {
+        Post post = postRepository.findById(postId).orElseThrow();
+        return modelMapper.map(post, PostReadResponseDTO.class);
+    }
+
 
     public PageResponseDTO<PostResponseDTO> listPosts(PageRequestDTO pageRequestDTO) {
         Page<PostResponseDTO> posts = postQueryRepository.listPagedPosts(pageRequestDTO.getTitleKeyword(), pageRequestDTO.getContentKeyword(), pageRequestDTO.getPageable(), pageRequestDTO.getPostType(), pageRequestDTO.getSortField(), pageRequestDTO.getSortDirection());
