@@ -1,25 +1,20 @@
 package com.everysesac.backend.domain.post.controller;
-import com.everysesac.backend.domain.auth.jwt.dto.CustomUserDetails;
 import com.everysesac.backend.domain.post.dto.request.PageRequestDTO;
 import com.everysesac.backend.domain.post.dto.request.PostCreateRequestDTO;
 import com.everysesac.backend.domain.post.dto.request.PostUpdateRequestDTO;
 import com.everysesac.backend.domain.post.dto.response.PageResponseDTO;
 import com.everysesac.backend.domain.post.dto.response.PostReadResponseDTO;
 import com.everysesac.backend.domain.post.dto.response.PostResponseDTO;
-import com.everysesac.backend.domain.post.entity.Post;
 import com.everysesac.backend.domain.post.service.PostService;
 import com.everysesac.backend.global.dto.ApiResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 @Tag(name = "Post API", description = "APIs related to posts")
