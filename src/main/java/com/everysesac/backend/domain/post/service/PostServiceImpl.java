@@ -36,10 +36,11 @@ public class PostServiceImpl implements PostService{
     @Override
     public PostResponseDTO modify(PostUpdateRequestDTO postCreateRequestDTO, Long postId) {
         Post post = postRepository.findById(postId)
-                .orElseThrow();
+                .orElseThrow(()->new EntityNotFoundException("Invalid request parameters : "+postId));
         post.changeTitle(postCreateRequestDTO.getTitle());
         post.changeContent(postCreateRequestDTO.getContent());
         post.changePostStatus(postCreateRequestDTO.getPostStatus());
+
         return modelMapper.map(post, PostResponseDTO.class);
     }
 
@@ -47,7 +48,7 @@ public class PostServiceImpl implements PostService{
     public void softDelete(Long postId) {
         long updatedRows = postQueryRepository.softDelete(postId);
         if (updatedRows == 0) { // 변경된 데이터 수가 0일 때 예외처리
-            throw new EntityNotFoundException("post not found : "+postId);
+            throw new EntityNotFoundException("Invalid request parameters : "+postId);
         }
     }
 
