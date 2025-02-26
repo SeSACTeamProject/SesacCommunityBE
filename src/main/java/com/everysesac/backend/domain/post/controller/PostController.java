@@ -3,7 +3,9 @@ import com.everysesac.backend.domain.post.dto.request.PageRequestDTO;
 import com.everysesac.backend.domain.post.dto.request.PostCreateRequestDTO;
 import com.everysesac.backend.domain.post.dto.request.PostUpdateRequestDTO;
 import com.everysesac.backend.domain.post.dto.response.PageResponseDTO;
+import com.everysesac.backend.domain.post.dto.response.PostReadResponseDTO;
 import com.everysesac.backend.domain.post.dto.response.PostResponseDTO;
+import com.everysesac.backend.domain.post.entity.Post;
 import com.everysesac.backend.domain.post.service.PostService;
 import com.everysesac.backend.global.dto.ApiResponse;
 import io.swagger.v3.oas.annotations.Operation;
@@ -46,7 +48,7 @@ public class PostController {
             @RequestBody @Valid PostCreateRequestDTO postCreateRequestDTO) {
         PostResponseDTO postResponse = postService.register(postCreateRequestDTO);
         ApiResponse<PostResponseDTO> apiResponse = new ApiResponse<>(
-                HttpStatus.CREATED.value()+"",
+                "success",
                 201,
                 "post created"
         );
@@ -65,7 +67,7 @@ public class PostController {
             @RequestBody @Valid PostUpdateRequestDTO postUpdateRequestDTO) {
         PostResponseDTO postResponse = postService.modify(postUpdateRequestDTO, postId);
         ApiResponse<PostResponseDTO> apiResponse = new ApiResponse<>(
-                HttpStatus.OK.value()+"",
+                "success",
                 HttpStatus.OK.value(),
                 "Request was successful."
         );
@@ -78,10 +80,24 @@ public class PostController {
     public ResponseEntity<ApiResponse<Void>> remove(@PathVariable Long postId) {
         postService.softDelete(postId);
         ApiResponse<Void> apiResponse = new ApiResponse<>(
-                HttpStatus.OK.value()+"",
+                "success",
                 HttpStatus.OK.value(),
                 "Delete was successful."
         );
+        return ResponseEntity.ok(apiResponse);
+    }
+
+    @Tag(name="POST API", description = "POST API")
+    @Operation(summary = "post read")
+    @GetMapping("/{postId}")
+    public ResponseEntity<ApiResponse<PostReadResponseDTO>> read(@PathVariable Long postId) {
+        PostReadResponseDTO postResponse = postService.readOne(postId);
+        ApiResponse<PostReadResponseDTO> apiResponse = new ApiResponse<>(
+                "success",
+                HttpStatus.OK.value(),
+                "Request was successful."
+        );
+        apiResponse.setData(postResponse);
         return ResponseEntity.ok(apiResponse);
     }
 
