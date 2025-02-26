@@ -13,6 +13,7 @@ import lombok.*;
 @Builder
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Table(name = "users")
+@ToString
 public class User extends BaseEntity {
 
     @Id
@@ -20,13 +21,13 @@ public class User extends BaseEntity {
     @Column(name = "user_id")
     private Long id;
 
-    @Column(nullable = false)
+    //@Column(nullable = false)
     private String email;
 
-    @Column(nullable = false)
+    //@Column(nullable = false)
     private String username;
 
-    @Column(nullable = false)
+    //@Column(nullable = false)
     private String password;
 
     @Enumerated(EnumType.STRING)
@@ -36,7 +37,7 @@ public class User extends BaseEntity {
     @Column(name = "sns_div")
     private SnsDiv snsDiv;
 
-    @Column(nullable = false)
+    //@Column(nullable = false)
     private String phonenumber;
 
 //    @Column(nullable = false)
