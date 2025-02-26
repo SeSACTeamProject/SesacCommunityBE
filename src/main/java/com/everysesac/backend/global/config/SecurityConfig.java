@@ -2,6 +2,7 @@ package com.everysesac.backend.global.config;
 
 
 import com.everysesac.backend.domain.auth.JWTUtil;
+import com.everysesac.backend.domain.auth.jwt.filter.ExceptionHandlerFilter;
 import com.everysesac.backend.domain.auth.jwt.filter.JWTFilter;
 import com.everysesac.backend.domain.auth.jwt.filter.LoginFilter;
 import org.springframework.context.annotation.Bean;
@@ -51,7 +52,6 @@ public class SecurityConfig {
         //http basic 인증 방식 disable
         http
                 .httpBasic(AbstractHttpConfigurer::disable);
-
         //경로별 인가 작업
         http
                 .authorizeHttpRequests((auth) -> auth
@@ -59,7 +59,8 @@ public class SecurityConfig {
                         .requestMatchers("/api/posts/**","/main").authenticated()
                         .requestMatchers("/admin").hasRole("ADMIN")
                         .anyRequest().authenticated());
-
+        http
+                .addFilterBefore(new ExceptionHandlerFilter(), UsernamePasswordAuthenticationFilter.class);
         http
                 .addFilterAt(new LoginFilter(authenticationManager(authenticationConfiguration), jwtUtil), UsernamePasswordAuthenticationFilter.class);
         http

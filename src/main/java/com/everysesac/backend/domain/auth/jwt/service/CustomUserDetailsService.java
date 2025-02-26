@@ -26,7 +26,9 @@ public class CustomUserDetailsService implements UserDetailsService {
         if (userData.isPresent()) {
             return new CustomUserDetails(userData.orElse(null));
         }
+        else {
+            throw new UsernameNotFoundException("아이디 또는 비밀번호가 잘못 되었습니다.");
+        }
 
-        return null;
     }
 }
