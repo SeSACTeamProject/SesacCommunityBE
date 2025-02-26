@@ -1,7 +1,7 @@
 package com.everysesac.backend.domain.user.entity;
 
 
-import com.everysesac.backend.domain.like.auth.entity.SnsDiv;
+import com.everysesac.backend.domain.auth.entity.SnsDiv;
 import com.everysesac.backend.global.util.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
@@ -13,24 +13,27 @@ import lombok.*;
 @Builder
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Table(name = "users")
-@ToString
 public class User extends BaseEntity {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "user_id")
     private Long id;
 
-    //@Column(nullable = false)
-    private String email;
+    @Column(nullable = false)
+    private String username; // 유저의 id
 
-    //@Column(nullable = false)
-    private String username;
+    @Column(nullable = false)
+    private String email; // 유저의 이메일
 
-    //@Column(nullable = false)
+    @Column(nullable = false)
+    private String name; // 유저의 본명 -> ex)홍길동
+
+    @Column(nullable = false)
     private String password;
 
     @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
     private Role role;
 
     @Enumerated(EnumType.STRING)
@@ -40,6 +43,7 @@ public class User extends BaseEntity {
     //@Column(nullable = false)
     private String phonenumber;
 
+    //@Column(name = "last_number", nullable = false)
 //    @Column(nullable = false)
     @Column(name = "last_number")
     private String lastNumber;

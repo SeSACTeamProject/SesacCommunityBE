@@ -34,7 +34,6 @@ public class SecurityConfig {
     }
     @Bean
     public BCryptPasswordEncoder bCryptPasswordEncoder() {
-
         return new BCryptPasswordEncoder();
     }
     @Bean
@@ -56,7 +55,7 @@ public class SecurityConfig {
         //경로별 인가 작업
         http
                 .authorizeHttpRequests((auth) -> auth
-                        .requestMatchers("/login", "/", "/join", "/api/posts").permitAll()
+                        .requestMatchers("/login", "/", "/join", "/api/posts","/api/auth/join","/swagger-ui/**").permitAll()
                         .requestMatchers("/api/posts/**","/main").authenticated()
                         .requestMatchers("/admin").hasRole("ADMIN")
                         .anyRequest().authenticated());

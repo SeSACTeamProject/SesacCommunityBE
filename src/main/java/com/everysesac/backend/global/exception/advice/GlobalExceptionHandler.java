@@ -40,8 +40,22 @@ public class GlobalExceptionHandler {
                 .body(response);
     }
 
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<ErrorResponse> handlerIllegalArgumentException(Exception ex) {
+        ErrorResponse response = new ErrorResponse(
+                "error",
+                ErrorCode.ILLEGAL_ARGUMENT_ERROR.getCode(),
+                ex.getMessage() != null ? ex.getMessage() : ErrorCode.ILLEGAL_ARGUMENT_ERROR.getMessage(),
+                null
+        );
+        return ResponseEntity.status(ErrorCode.ILLEGAL_ARGUMENT_ERROR.getStatus())
+                .body(response);
+
+    }
+
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponse> handleGlobalExceptions(Exception ex) {
+
         log.error("Unhandled exception occurred", ex);
 
         ErrorResponse response = new ErrorResponse(

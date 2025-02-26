@@ -1,4 +1,5 @@
 package com.everysesac.backend.domain.post.controller;
+import com.everysesac.backend.domain.auth.jwt.dto.CustomUserDetails;
 import com.everysesac.backend.domain.post.dto.request.PageRequestDTO;
 import com.everysesac.backend.domain.post.dto.request.PostCreateRequestDTO;
 import com.everysesac.backend.domain.post.dto.request.PostUpdateRequestDTO;
@@ -18,6 +19,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 @Tag(name = "Post API", description = "APIs related to posts")
@@ -30,7 +32,7 @@ public class PostController {
 
     @Operation(summary = "Get Post List", description = "Retrieve a paginated list of posts.")
     @GetMapping
-    public ResponseEntity<ApiResponse<PostResponseDTO>> studyList(PageRequestDTO pageRequestDTO) {
+    public ResponseEntity<ApiResponse<PostResponseDTO>> variousList(PageRequestDTO pageRequestDTO) {
         PageResponseDTO<PostResponseDTO> posts = postService.listPosts(pageRequestDTO);
         ApiResponse<PostResponseDTO> response = ApiResponse.<PostResponseDTO>builder()
                 .status("success")

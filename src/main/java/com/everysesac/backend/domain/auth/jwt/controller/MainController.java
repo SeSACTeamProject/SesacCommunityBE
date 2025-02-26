@@ -14,6 +14,10 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.Optional;
+
+
+///  jwt 예시입니다.
 
 @Slf4j
 @Controller
@@ -44,7 +48,7 @@ public class MainController {
         // CustomUserDetails에서 사용자 정보 접근
         String username = userDetails.getUsername();
         String role = userDetails.getAuthorities().iterator().next().getAuthority();
-        User byUsername = userRepository.findByUsername(username);
+        Optional<User> byUsername = userRepository.findByUsername(username);
 
         log.info("{}", byUsername);
 

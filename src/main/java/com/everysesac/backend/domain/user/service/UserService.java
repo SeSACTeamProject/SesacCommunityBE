@@ -7,5 +7,5 @@ import com.everysesac.backend.domain.user.dto.response.UserResponseDTO;
 
 public interface UserService {
     UserResponseDTO signup(UserRequestDTO requestDTO);
-    LoginResponseDTO login(LoginRequestDTO requestDTO);
+    //LoginResponseDTO login(LoginRequestDTO requestDTO);
 }

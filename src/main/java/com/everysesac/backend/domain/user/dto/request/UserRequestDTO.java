@@ -1,10 +1,7 @@
 package com.everysesac.backend.domain.user.dto.request;
 
 import com.everysesac.backend.domain.auth.entity.SnsDiv;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
@@ -13,7 +10,12 @@ import jakarta.validation.constraints.Email;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
+@ToString
+@Builder
 public class UserRequestDTO {
+
+    @NotBlank(message = "id는 필수입니다.")
+    private String username;
 
     @NotBlank(message = "이메일은 필수입니다.")
     @Email(message = "이메일 형식이 올바르지 않습니다.")
@@ -24,8 +26,6 @@ public class UserRequestDTO {
 
     @NotBlank(message = "비밀번호는 필수입니다.")
     private String password;
-
-    private SnsDiv snsDiv;
 
     @NotBlank(message = "전화번호는 필수입니다.")
     private String phonenumber;
