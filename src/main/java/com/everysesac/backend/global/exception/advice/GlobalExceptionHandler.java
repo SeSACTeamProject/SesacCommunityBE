@@ -2,7 +2,9 @@ package com.everysesac.backend.global.exception.advice;
 
 import com.everysesac.backend.global.exception.ErrorCode;
 import com.everysesac.backend.global.exception.ErrorResponse;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindException;
 import org.springframework.validation.BindingResult;
@@ -51,5 +53,15 @@ public class GlobalExceptionHandler {
 
         return ResponseEntity.status(ErrorCode.INTERNAL_SERVER_ERROR.getStatus())
                 .body(response);
+    }
+
+    // EntityNotFoundException 처리하는 메서드
+    // 존재하지 않는 postId를 요청했을때 INVALID_REQUEST_PARAMETER(E4001)으로 처리
+    @ExceptionHandler(EntityNotFoundException.class)
+    public ResponseEntity<ErrorResponse> handleIllegalArgumentException(EntityNotFoundException ex) {
+        log.info("EntityNotFoundException",ex);
+        ErrorResponse response = new ErrorResponse("Bad Request", ErrorCode.INVALID_REQUEST_PARAMETER.getCode(), ErrorCode.INVALID_REQUEST_PARAMETER.getMessage(), null);
+        return ResponseEntity.status(ErrorCode.INVALID_REQUEST_PARAMETER.getStatus()).
+                body(response);
     }
 }
