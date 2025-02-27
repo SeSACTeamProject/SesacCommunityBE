@@ -1,6 +1,6 @@
-package com.everysesac.backend.domain.auth.jwt.controller;
+package com.everysesac.backend.domain.auth.controller;
 
-import com.everysesac.backend.domain.auth.jwt.dto.CustomUserDetails;
+import com.everysesac.backend.domain.auth.dto.CustomUserDetails;
 import com.everysesac.backend.domain.user.entity.User;
 import com.everysesac.backend.domain.user.repository.UserRepository;
 import lombok.extern.slf4j.Slf4j;

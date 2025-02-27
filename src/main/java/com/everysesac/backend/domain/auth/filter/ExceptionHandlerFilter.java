@@ -1,4 +1,4 @@
-package com.everysesac.backend.domain.auth.jwt.filter;
+package com.everysesac.backend.domain.auth.filter;
 
 import com.everysesac.backend.global.exception.ErrorCode;
 import com.everysesac.backend.global.exception.ErrorResponse;
@@ -9,23 +9,35 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.*;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.access.AccessDeniedException;
+import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.util.Map;
 
+
+@Component
 @Slf4j
 public class ExceptionHandlerFilter extends OncePerRequestFilter {
 
     private final ObjectMapper objectMapper = new ObjectMapper();
 
+    private static final Map<Class<? extends AuthenticationException>, ErrorCode> AUTH_EXCEPTION_ERROR_CODE_MAP = Map.of(
+            BadCredentialsException.class, ErrorCode.BAD_CREDENTIALS,
+            DisabledException.class, ErrorCode.ACCOUNT_DISABLED,
+            LockedException.class, ErrorCode.ACCOUNT_LOCKED,
+            AccountExpiredException.class, ErrorCode.ACCOUNT_EXPIRED,
+            CredentialsExpiredException.class, ErrorCode.CREDENTIALS_EXPIRED
+    );
+
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
         try {
-            // 다음 필터로 요청 전달
             filterChain.doFilter(request, response);
         } catch (AuthenticationException ex) {
             log.error("Authentication exception occurred: {}", ex.getMessage());
@@ -35,52 +47,40 @@ public class ExceptionHandlerFilter extends OncePerRequestFilter {
             handleAccessDeniedException(response, ex);
         } catch (IllegalArgumentException ex) {
             log.error("Illegal argument exception occurred: {}", ex.getMessage());
-            handleCustomException(response, ErrorCode.ILLEGAL_ARGUMENT_ERROR);
+            handleCustomException(response, ErrorCode.ILLEGAL_ARGUMENT_ERROR,ex);
         } catch (Exception ex) {
             log.error("Unhandled exception occurred: {}", ex.getMessage(), ex);
-            handleCustomException(response, ErrorCode.INTERNAL_SERVER_ERROR);
+            handleCustomException(response, ErrorCode.INTERNAL_SERVER_ERROR,ex);
         }
     }
 
     private void handleAuthenticationException(HttpServletResponse response, AuthenticationException ex) throws IOException {
-        ErrorCode errorCode;
+        // 기본값: AUTHENTICATION_FAILED
+        ErrorCode errorCode = AUTH_EXCEPTION_ERROR_CODE_MAP.getOrDefault(ex.getClass(), ErrorCode.AUTHENTICATION_FAILED);
 
-        if (ex instanceof BadCredentialsException) {
-            errorCode = ErrorCode.BAD_CREDENTIALS;
-        } else if (ex instanceof DisabledException) {
-            errorCode = ErrorCode.ACCOUNT_DISABLED;
-        } else if (ex instanceof LockedException) {
-            errorCode = ErrorCode.ACCOUNT_LOCKED;
-        } else if (ex instanceof AccountExpiredException) {
-            errorCode = ErrorCode.ACCOUNT_EXPIRED;
-        } else if (ex instanceof CredentialsExpiredException) {
-            errorCode = ErrorCode.CREDENTIALS_EXPIRED;
-        } else {
-            errorCode = ErrorCode.AUTHENTICATION_FAILED; // 기본 인증 실패 에러 코드
-        }
-
-        setErrorResponse(response, errorCode);
+        setErrorResponse(response, errorCode, ex);
     }
 
     private void handleAccessDeniedException(HttpServletResponse response, AccessDeniedException ex) throws IOException {
-        setErrorResponse(response, ErrorCode.ACCESS_DENIED);
+        setErrorResponse(response, ErrorCode.ACCESS_DENIED,ex);
     }
 
-    private void handleCustomException(HttpServletResponse response, ErrorCode errorCode) throws IOException {
-        setErrorResponse(response, errorCode);
+    private void handleCustomException(HttpServletResponse response, ErrorCode errorCode, Exception ex) throws IOException {
+        setErrorResponse(response, errorCode, ex);
     }
 
-    private void setErrorResponse(HttpServletResponse response, ErrorCode errorCode) throws IOException {
+    private void setErrorResponse(HttpServletResponse response, ErrorCode errorCode,Exception ex) throws IOException {
         response.setStatus(errorCode.getStatus().value());
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
         response.setCharacterEncoding("UTF-8");
 
         // 에러 응답 생성
-        ErrorResponse errorResponse = ErrorResponse.builder()
-                .status("error")
-                .code(errorCode.getCode())
-                .message(errorCode.getMessage())
-                .build();
+        ErrorResponse errorResponse = new ErrorResponse(
+                "error",
+                errorCode.getCode(),
+                ex.getMessage() != null ? ex.getMessage() : ErrorCode.INTERNAL_SERVER_ERROR.getMessage(),
+                null
+        );
 
         // JSON 응답 작성
         response.getWriter().write(objectMapper.writeValueAsString(errorResponse));

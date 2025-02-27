@@ -75,7 +75,8 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponse> handleIllegalArgumentException(EntityNotFoundException ex) {
         log.info("EntityNotFoundException",ex);
         ErrorResponse response = new ErrorResponse("error", ErrorCode.INVALID_REQUEST_PARAMETER.getCode(), ErrorCode.INVALID_REQUEST_PARAMETER.getMessage(), null);
-        return ResponseEntity.status(ErrorCode.INVALID_REQUEST_PARAMETER.getStatus()).
-                body(response);
+        return ResponseEntity
+                .status(ErrorCode.INVALID_REQUEST_PARAMETER.getStatus())
+                .body(response);
     }
 }

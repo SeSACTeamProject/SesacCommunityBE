@@ -1,9 +1,7 @@
 package com.everysesac.backend.domain.user.dto.request;
 
-import com.everysesac.backend.domain.auth.entity.SnsDiv;
 import lombok.*;
 
-import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Email;
 

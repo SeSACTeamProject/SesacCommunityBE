@@ -1,4 +1,4 @@
-package com.everysesac.backend.domain.auth.jwt.dto;
+package com.everysesac.backend.domain.auth.dto;
 
 import com.everysesac.backend.domain.user.entity.User;
 import org.springframework.security.core.GrantedAuthority;

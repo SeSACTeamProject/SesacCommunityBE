@@ -1,4 +1,4 @@
-package com.everysesac.backend.domain.auth.jwt.controller;
+package com.everysesac.backend.domain.auth.controller;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;

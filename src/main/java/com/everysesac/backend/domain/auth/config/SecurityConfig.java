@@ -1,9 +1,13 @@
-package com.everysesac.backend.global.config;
+package com.everysesac.backend.domain.auth.config;
 
 
-import com.everysesac.backend.domain.auth.JWTUtil;
-import com.everysesac.backend.domain.auth.jwt.filter.JWTFilter;
-import com.everysesac.backend.domain.auth.jwt.filter.LoginFilter;
+import com.everysesac.backend.domain.auth.filter.ExceptionHandlerFilter;
+import com.everysesac.backend.domain.auth.repository.RefreshRepository;
+import com.everysesac.backend.domain.auth.filter.CustomLogoutFilter;
+import com.everysesac.backend.domain.auth.jwt.JWTUtil;
+import com.everysesac.backend.domain.auth.filter.JWTFilter;
+import com.everysesac.backend.domain.auth.filter.LoginFilter;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -15,18 +19,17 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.authentication.logout.LogoutFilter;
 
 @Configuration
 @EnableWebSecurity
+@RequiredArgsConstructor
 public class SecurityConfig {
     private final JWTUtil jwtUtil;
     private final AuthenticationConfiguration authenticationConfiguration;
+    private final RefreshRepository refreshRepository;
 
-    public SecurityConfig(AuthenticationConfiguration authenticationConfiguration, JWTUtil jwtUtil) {
 
-        this.authenticationConfiguration = authenticationConfiguration;
-        this.jwtUtil = jwtUtil;
-    }
 
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration configuration) throws Exception {
@@ -54,16 +57,19 @@ public class SecurityConfig {
         //경로별 인가 작업
         http
                 .authorizeHttpRequests((auth) -> auth
-                        .requestMatchers("/login", "/", "/join", "/api/posts","/api/auth/join","/swagger-ui/**").permitAll()
-                        .requestMatchers("/api/posts/**","/main").authenticated()
+                        .requestMatchers("/login", "/", "/join", "/api/posts", "/api/auth/join", "/swagger-ui/**").permitAll()
+                        .requestMatchers("/api/posts/**", "/main").authenticated()
                         .requestMatchers("/admin").hasRole("ADMIN")
+                        .requestMatchers("/reissue").permitAll()
                         .anyRequest().authenticated());
-//        http
-//                .addFilterBefore(new ExceptionHandlerFilter(), UsernamePasswordAuthenticationFilter.class);
         http
-                .addFilterAt(new LoginFilter(authenticationManager(authenticationConfiguration), jwtUtil), UsernamePasswordAuthenticationFilter.class);
+                .addFilterBefore(new ExceptionHandlerFilter(), UsernamePasswordAuthenticationFilter.class);
+        http
+                .addFilterAt(new LoginFilter(authenticationManager(authenticationConfiguration), jwtUtil, refreshRepository), UsernamePasswordAuthenticationFilter.class);
         http
                 .addFilterBefore(new JWTFilter(jwtUtil), LoginFilter.class);
+        http
+                .addFilterBefore(new CustomLogoutFilter(jwtUtil, refreshRepository), LogoutFilter.class);
         //세션 설정
         http
                 .sessionManagement((session) -> session
