@@ -20,8 +20,6 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 import java.util.Collection;
 import java.util.Date;
-import java.util.Iterator;
-
 
 @Slf4j
 @RequiredArgsConstructor
@@ -31,12 +29,14 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
     private final JWTUtil jwtUtil;
     private final RefreshRepository repository;
 
+    // 사용자 인증 시도
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
+
         String username = obtainUsername(request);
         String password = obtainPassword(request);
 
-        log.info("{},{}", username, password);
+        log.info("Attempting authentication for username: {}", username);
 
         if (username == null || username.isEmpty()) {
             throw new IllegalArgumentException("아이디를 입력해주세요.");
@@ -50,27 +50,31 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
         return authenticationManager.authenticate(authToken);
     }
 
+    // 인증 성공 시 호출
     @Override
     protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authentication) {
         CustomUserDetails customUserDetails = (CustomUserDetails) authentication.getPrincipal();
 
         String username = customUserDetails.getUsername();
-
         Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
-        Iterator<? extends GrantedAuthority> iterator = authorities.iterator();
-        GrantedAuthority auth = iterator.next();
+        String role = authorities.iterator().next().getAuthority();
 
-        String role = auth.getAuthority();
-
-        String access = jwtUtil.createJwt("access", username, role, 1000 * 60 * 30L); // 30분
+        // Access Token 및 Refresh Token 생성
+        String access = jwtUtil.createJwt("access", username, role, 1000L); // 30분
         String refresh = jwtUtil.createJwt("refresh", username, role, 1000 * 60 * 60 * 24L); // 하루
 
-        addRefreshEntity(username,refresh,1000 * 60 * 60 * 24L);
+        addRefreshEntity(username, refresh, 1000 * 60 * 60 * 24L);
 
         response.setHeader("access", access);
         response.addCookie(createCookie("refresh", refresh));
         response.setStatus(HttpStatus.OK.value());
+    }
 
+    // 인증 실패 시 호출
+    @Override
+    protected void unsuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response, AuthenticationException failed) {
+        log.error("Authentication failed: {}", failed.getMessage());
+        throw failed; //
     }
 
     private Cookie createCookie(String key, String value) {
@@ -78,12 +82,6 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
         cookie.setMaxAge(24 * 60 * 60);
         cookie.setHttpOnly(true);
         return cookie;
-    }
-
-    //로그인 실패시 실행하는 메소드
-    @Override
-    protected void unsuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response, AuthenticationException failed) {
-        response.setStatus(401);
     }
 
     private void addRefreshEntity(String username, String refresh, Long expiredMs) {

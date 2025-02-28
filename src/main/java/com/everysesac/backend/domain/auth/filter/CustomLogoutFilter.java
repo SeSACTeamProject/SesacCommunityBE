@@ -1,16 +1,20 @@
 package com.everysesac.backend.domain.auth.filter;
 
-import com.everysesac.backend.global.exception.CustomException;
-import com.everysesac.backend.global.exception.ErrorCode;
-import com.everysesac.backend.domain.auth.repository.RefreshRepository;
 import com.everysesac.backend.domain.auth.jwt.JWTUtil;
+import com.everysesac.backend.domain.auth.repository.RefreshRepository;
 import io.jsonwebtoken.ExpiredJwtException;
-import jakarta.servlet.*;
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.ServletRequest;
+import jakarta.servlet.ServletResponse;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.authentication.InsufficientAuthenticationException;
+import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.web.authentication.session.SessionAuthenticationException;
 import org.springframework.web.filter.GenericFilterBean;
 
 import java.io.IOException;
@@ -18,6 +22,7 @@ import java.io.IOException;
 @RequiredArgsConstructor
 @Slf4j
 public class CustomLogoutFilter extends GenericFilterBean {
+
     private final JWTUtil jwtUtil;
     private final RefreshRepository refreshRepository;
 
@@ -27,56 +32,53 @@ public class CustomLogoutFilter extends GenericFilterBean {
     }
 
     public void doFilter(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-        // URI 체크
-        if (checkUri(request, response, filterChain)) return;
+        try {
+            // URI 체크
+            if (isLogoutRequest(request, filterChain,response)) return;
 
-        // POST 요청인지 확인
-        if (checkPostMethod(request, response, filterChain)) return;
+            // POST 요청인지 확인
+            if (isPostRequest(request, filterChain,response)) return;
 
-        // Refresh Token 가져오기
-        String refresh = getRefreshToken(request);
+            // Refresh Token 가져오기
+            String refresh = getRefreshToken(request);
 
-        // Refresh Token null 체크
-        refreshNullCheck(refresh);
+            // Refresh Token 검증
+            validateRefreshToken(refresh);
 
-        // Refresh Token 만료 여부 확인
-        expiredCheck(refresh);
+            // 로그아웃 처리 (Refresh Token 삭제 및 쿠키 초기화)
+            processLogout(response, refresh);
 
-        // Refresh Token 카테고리 확인
-        categoryCheck(refresh);
-
-        // Refresh Token DB 존재 여부 확인
-        dbCheck(refresh);
-
-        // 로그아웃 처리 (Refresh Token 삭제 및 쿠키 초기화)
-        processLogout(response, refresh);
-    }
-
-    private void refreshNullCheck(String refresh) {
-        if (refresh == null) {
-            throw new CustomException(ErrorCode.INVALID_BEARER_TOKEN);
+        } catch (ExpiredJwtException e) {
+            log.error("Expired JWT Token during logout: {}", e.getMessage());
+            throw new SessionAuthenticationException("Refresh token has expired.");
+        } catch (AuthenticationException e) {
+            log.error("Authentication error during logout: {}", e.getMessage());
+            throw e; // Spring Security가 처리하도록 위임
+        } catch (IllegalArgumentException e) {
+            log.error("Invalid input during logout: {}", e.getMessage());
+            throw new InsufficientAuthenticationException(e.getMessage());
         }
     }
 
-    private void dbCheck(String refresh) {
-        Boolean isExist = refreshRepository.existsByRefresh(refresh);
-        if (!isExist) {
-            throw new CustomException(ErrorCode.AUTHENTICATION_FAILED);
+    private void validateRefreshToken(String refresh) {
+        if (refresh == null || refresh.isEmpty()) {
+            throw new IllegalArgumentException("Refresh token is missing.");
         }
-    }
 
-    private void categoryCheck(String refresh) {
-        String category = jwtUtil.getCategory(refresh);
-        if (!"refresh".equals(category)) {
-            throw new CustomException(ErrorCode.AUTHENTICATION_FAILED);
-        }
-    }
-
-    private void expiredCheck(String refresh) {
         try {
             jwtUtil.isExpired(refresh);
         } catch (ExpiredJwtException e) {
-            throw new CustomException(ErrorCode.JWT_VALIDATION_FAILED);
+            throw new SessionAuthenticationException("Refresh token has expired.");
+        }
+
+        String category = jwtUtil.getCategory(refresh);
+        if (!"refresh".equals(category)) {
+            throw new IllegalArgumentException("Invalid refresh token category.");
+        }
+
+        boolean exists = refreshRepository.existsByRefresh(refresh);
+        if (!exists) {
+            throw new IllegalArgumentException("Refresh token not found in the database.");
         }
     }
 
@@ -92,7 +94,7 @@ public class CustomLogoutFilter extends GenericFilterBean {
         return null;
     }
 
-    private boolean checkPostMethod(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws IOException, ServletException {
+    private boolean isPostRequest(HttpServletRequest request, FilterChain filterChain, HttpServletResponse response) throws IOException, ServletException {
         if (!"POST".equalsIgnoreCase(request.getMethod())) {
             filterChain.doFilter(request, response);
             return true;
@@ -100,7 +102,7 @@ public class CustomLogoutFilter extends GenericFilterBean {
         return false;
     }
 
-    private boolean checkUri(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws IOException, ServletException {
+    private boolean isLogoutRequest(HttpServletRequest request, FilterChain filterChain, HttpServletResponse response) throws IOException, ServletException {
         String requestUri = request.getRequestURI();
         if (!"/logout".equals(requestUri)) {
             filterChain.doFilter(request, response);
