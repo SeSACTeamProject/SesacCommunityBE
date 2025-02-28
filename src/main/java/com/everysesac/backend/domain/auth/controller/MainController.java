@@ -45,9 +45,12 @@ public class MainController {
 
     @GetMapping("/me")
     public String getCurrentUser(@AuthenticationPrincipal CustomUserDetails userDetails) {
+
         // CustomUserDetails에서 사용자 정보 접근
         String username = userDetails.getUsername();
+
         String role = userDetails.getAuthorities().iterator().next().getAuthority();
+
         Optional<User> byUsername = userRepository.findByUsername(username);
 
         log.info("{}", byUsername);

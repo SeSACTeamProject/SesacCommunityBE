@@ -35,7 +35,7 @@ public class UserRepositoryTest {
                 .password("password123")
                 .phonenumber("01012345678")
                 .lastNumber("5678")
-                .role(Role.USER)  // 적절한 Role 추가
+                .role(Role.ROLE_USER)  // 적절한 Role 추가
                 .snsDiv(SnsDiv.KAKAO)  // 적절한 snsDiv 추가
                 .build();
 

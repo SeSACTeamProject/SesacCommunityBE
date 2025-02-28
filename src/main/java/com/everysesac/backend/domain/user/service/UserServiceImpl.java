@@ -50,6 +50,11 @@ public class UserServiceImpl implements UserService {
         );
     }
 
+    @Override
+    public Long findUserIdByUsername(String username) {
+        return userRepository.findByUsername(username).orElseThrow().getId();
+    }
+
 //    @Override
 //    public LoginResponseDTO login(LoginRequestDTO requestDTO) {
 //        User user = userRepository.findByUsername(requestDTO.getUsername())

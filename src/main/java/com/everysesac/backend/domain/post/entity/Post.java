@@ -72,6 +72,13 @@ public class Post extends BaseEntity {
         this.postStatus = postStatus;
     }
 
+    public void increaseCommentsCount() {
+        this.commentsCount += 1;
+    }
+    public void decreaseCommentsCount() {
+        this.commentsCount += 1;
+    }
+
 
 
 
