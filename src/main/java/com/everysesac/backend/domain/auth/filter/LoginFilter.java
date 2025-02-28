@@ -60,7 +60,7 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
         String role = authorities.iterator().next().getAuthority();
 
         // Access Token 및 Refresh Token 생성
-        String access = jwtUtil.createJwt("access", username, role, 1000L); // 30분
+        String access = jwtUtil.createJwt("access", username, role, 1000 * 60 * 60 * 24L); // 30분
         String refresh = jwtUtil.createJwt("refresh", username, role, 1000 * 60 * 60 * 24L); // 하루
 
         addRefreshEntity(username, refresh, 1000 * 60 * 60 * 24L);

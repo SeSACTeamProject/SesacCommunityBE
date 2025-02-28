@@ -76,7 +76,7 @@ public class Post extends BaseEntity {
         this.commentsCount += 1;
     }
     public void decreaseCommentsCount() {
-        this.commentsCount += 1;
+        this.commentsCount -= 1;
     }
 
 

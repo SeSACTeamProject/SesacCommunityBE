@@ -30,6 +30,7 @@ public class PostServiceImpl implements PostService{
     public PostResponseDTO register(PostCreateRequestDTO postCreateRequestDTO) {
         Post post = modelMapper.map(postCreateRequestDTO, Post.class);
         // TODO : JWT 구현 이후 writer 추가 작업
+
         return modelMapper.map(postRepository.save(post), PostResponseDTO.class);
     }
 

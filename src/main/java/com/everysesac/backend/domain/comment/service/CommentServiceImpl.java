@@ -42,6 +42,7 @@ public class CommentServiceImpl {
     public CommentResponseDTO modify(CommentUpdateRequestDTO commentUpdateRequestDTO) {
         Comment comment = commentRepository.findById(commentUpdateRequestDTO.getCommentId()).orElseThrow();
         comment.changeContent(commentUpdateRequestDTO.getContent());
+        commentRepository.save(comment);
         CommentResponseDTO map = modelMapper.map(comment, CommentResponseDTO.class);
         map.setName(comment.getUser().getName());
         return map;

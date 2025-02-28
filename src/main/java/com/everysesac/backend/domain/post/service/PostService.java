@@ -1,4 +1,5 @@
 package com.everysesac.backend.domain.post.service;
+import com.everysesac.backend.domain.auth.dto.CustomUserDetails;
 import com.everysesac.backend.domain.post.dto.request.PageRequestDTO;
 import com.everysesac.backend.domain.post.dto.request.PostUpdateRequestDTO;
 import com.everysesac.backend.domain.post.dto.response.PageResponseDTO;
