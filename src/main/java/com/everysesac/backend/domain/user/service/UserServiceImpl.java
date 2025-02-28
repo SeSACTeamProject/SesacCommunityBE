@@ -9,6 +9,7 @@ import com.everysesac.backend.domain.user.dto.response.UserResponseDTO;
 import com.everysesac.backend.domain.user.repository.UserRepository;
 import com.everysesac.backend.global.util.PhonenumberUtils;
 
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -52,12 +53,12 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User findUserByUsername(String username) {
-        return userRepository.findByUsername(username).orElseThrow();
+        return userRepository.findByUsername(username).orElseThrow(()->new EntityNotFoundException("Invalid request parameters : "+username));
     }
 
     @Override
     public Long findUserIdByUsername(String username) {
-        return userRepository.findByUsername(username).orElseThrow().getId();
+        return userRepository.findByUsername(username).orElseThrow(()->new EntityNotFoundException("Invalid request parameters : "+username)).getId();
     }
 
 //    @Override

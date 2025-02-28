@@ -24,11 +24,12 @@ public class CommentController {
 
 
     @PostMapping("/{postId}/comments")
-    public ResponseEntity<ApiResponse<CommentResponseDTO>> register(@Valid @RequestBody CommentCreateRequestDTO commentCreateRequestDTO, @AuthenticationPrincipal CustomUserDetails userDetails) {
+    public ResponseEntity<ApiResponse<CommentResponseDTO>> register(@Valid @RequestBody CommentCreateRequestDTO commentCreateRequestDTO, @AuthenticationPrincipal CustomUserDetails userDetails,@PathVariable Long postId) {
 
         String username = userDetails.getUsername();
         Long userId = userService.findUserIdByUsername(username);
         commentCreateRequestDTO.setUserId(userId);
+        commentCreateRequestDTO.setPostId(postId);
         CommentResponseDTO register = commentService.register(commentCreateRequestDTO);
 
         ApiResponse<CommentResponseDTO> apiResponse = new ApiResponse<>(
@@ -41,7 +42,9 @@ public class CommentController {
     }
 
     @PatchMapping("/{postId}/comments/{commentId}")
-    public ResponseEntity<ApiResponse<CommentResponseDTO>> modify(@Valid @RequestBody CommentUpdateRequestDTO commentUpdateRequestDTO) {
+    public ResponseEntity<ApiResponse<CommentResponseDTO>> modify(@Valid @RequestBody CommentUpdateRequestDTO commentUpdateRequestDTO,@PathVariable Long postId,@PathVariable Long commentId) {
+        commentUpdateRequestDTO.setCommentId(commentId);
+        commentUpdateRequestDTO.setPostId(postId);
         CommentResponseDTO commentResponseDTO = commentService.modify(commentUpdateRequestDTO);
         ApiResponse<CommentResponseDTO> apiResponse = new ApiResponse<>(
                 "success",
@@ -53,8 +56,8 @@ public class CommentController {
     }
 
     @DeleteMapping("/{postId}/comments/{commentId}")
-    public ResponseEntity<ApiResponse<Void>> remove(@PathVariable Long commentId) {
-        commentService.delete(commentId);
+    public ResponseEntity<ApiResponse<Void>> remove(@PathVariable Long commentId,@PathVariable Long postId) {
+        commentService.delete(commentId,postId);
         ApiResponse<Void> apiResponse = new ApiResponse<>(
                 "success",
                 HttpStatus.OK.value(),

@@ -3,7 +3,6 @@ package com.everysesac.backend.domain.post.dto.response;
 import com.everysesac.backend.domain.comment.entity.Comment;
 import com.everysesac.backend.domain.post.entity.PostStatus;
 import com.everysesac.backend.domain.post.entity.PostType;
-import com.querydsl.core.annotations.QueryProjection;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

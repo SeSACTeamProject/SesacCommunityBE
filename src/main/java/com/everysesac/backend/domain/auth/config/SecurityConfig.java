@@ -55,13 +55,6 @@ public class SecurityConfig {
         http
                 .httpBasic(AbstractHttpConfigurer::disable);
         //경로별 인가 작업
-        http
-                .authorizeHttpRequests((auth) -> auth
-                        .requestMatchers("/login", "/", "/join", "/api/posts", "/api/auth/join", "/swagger-ui/**").permitAll()
-                        .requestMatchers("/api/**", "/main").authenticated()
-                        .requestMatchers("/admin").hasRole("ADMIN")
-                        .requestMatchers("/reissue").permitAll()
-                        .anyRequest().authenticated());
 
         http
                 .addFilterBefore(new ExceptionHandlerFilter(), UsernamePasswordAuthenticationFilter.class); // 필터 체인 맨 앞에 추가
@@ -75,6 +68,13 @@ public class SecurityConfig {
         http
                 .sessionManagement((session) -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS));
+        http
+                .authorizeHttpRequests((auth) -> auth
+                        .requestMatchers("/login", "/", "/join", "/api/posts", "/api/auth/join", "/swagger-ui/**").permitAll()
+                        .requestMatchers("/api/**", "/main").authenticated()
+                        .requestMatchers("/admin").hasRole("ADMIN")
+                        .requestMatchers("/reissue").permitAll()
+                        .anyRequest().authenticated());
 
 
         return http.build();

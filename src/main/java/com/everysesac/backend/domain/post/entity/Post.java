@@ -14,11 +14,10 @@ import static com.everysesac.backend.domain.post.entity.PostStatus.IN_PROGRESS;
 @Builder
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Table(name = "posts")
-@ToString
 public class Post extends BaseEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue
     @Column(name = "post_id")
     private Long id;
 

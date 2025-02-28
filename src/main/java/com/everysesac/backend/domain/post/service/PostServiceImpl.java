@@ -28,10 +28,17 @@ public class PostServiceImpl implements PostService{
 
     @Override
     public PostResponseDTO register(PostCreateRequestDTO postCreateRequestDTO) {
-        Post post = modelMapper.map(postCreateRequestDTO, Post.class);
+
+        Post post = Post.builder()
+                .postType(postCreateRequestDTO.getPostType())
+                .title(postCreateRequestDTO.getTitle())
+                .content(postCreateRequestDTO.getContent())
+                .user(postCreateRequestDTO.getUser())
+                .build();
+        Post save = postRepository.save(post);
         // TODO : JWT 구현 이후 writer 추가 작업
 
-        return modelMapper.map(postRepository.save(post), PostResponseDTO.class);
+        return modelMapper.map(save, PostResponseDTO.class);
     }
 
     @Override
@@ -55,7 +62,7 @@ public class PostServiceImpl implements PostService{
 
     @Override
     public PostReadResponseDTO readOne(Long postId) {
-        Post post = postRepository.findById(postId).orElseThrow();
+        Post post = postRepository.findById(postId).orElseThrow(()->new EntityNotFoundException("Invalid request parameters : "+postId));
         return modelMapper.map(post, PostReadResponseDTO.class);
     }
 

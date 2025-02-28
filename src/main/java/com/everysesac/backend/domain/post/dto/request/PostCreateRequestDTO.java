@@ -4,15 +4,14 @@ import com.everysesac.backend.domain.post.entity.PostType;
 import com.everysesac.backend.domain.user.entity.User;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
+import org.springframework.transaction.annotation.Transactional;
 
 @Data
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
+@ToString
 public class PostCreateRequestDTO {
     private User user;
     @NotBlank(message = "title은 null값이 아니어야 합니다.")
